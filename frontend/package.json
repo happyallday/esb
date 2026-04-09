@@ -13,7 +13,8 @@
     "axios": "^1.6.2",
     "element-plus": "^2.5.1",
     "echarts": "^5.4.3",
-    "dayjs": "^1.11.10"
+    "dayjs": "^1.11.10",
+    "vue-json-viewer": "^3.0.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.1",
