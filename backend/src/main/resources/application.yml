@@ -1,0 +1,63 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: esb-gateway
+  
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/esb_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: non_null
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+resilience4j:
+  ratelimiter:
+    instances:
+      esbRateLimiter:
+        limit-for-period: 100
+        limit-refresh-period: 1s
+        timeout-duration: 3s
+        register-health-indicator: true
+  circuitbreaker:
+    instances:
+      esbCircuitBreaker:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        sliding-window-type: COUNT_BASED
+        register-health-indicator: true
+  retry:
+    instances:
+      esbRetry:
+        max-attempts: 3
+        wait-duration: 1s
+        retry-exceptions:
+          - java.net.SocketTimeoutException
+          - java.io.IOException
+        ignore-exceptions:
+          - java.lang.IllegalArgumentException
+
+logging:
+  level:
+    com.esb: DEBUG
+    org.springframework.web: INFO
+    io.github.resilience4j: INFO
