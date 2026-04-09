@@ -18,6 +18,9 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     default-property-inclusion: non_null
 
+frontend:
+  url: http://localhost:3000
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
