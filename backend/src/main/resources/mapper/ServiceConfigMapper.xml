@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.esb.mapper.ServiceConfigMapper">
+
+    <select id="selectByServiceName" resultType="com.esb.entity.ServiceConfig">
+        SELECT * FROM esb_service_config
+        WHERE service_name = #{serviceName} AND status = 1
+    </select>
+
+</mapper>
