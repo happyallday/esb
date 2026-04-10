@@ -223,7 +223,7 @@ const handleReset = () => {
 
 const handleExample = () => {
   testForm.method = 'POST'
-  testForm.path = 'chat/completions'
+  testForm.path = '/v1/chat/completions'
   testForm.headers = JSON.stringify({
     "Authorization": "Bearer sk-Q-dZ9AL1LiTO4K52XFwcdw",
     "Content-Type": "application/json"

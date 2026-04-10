@@ -74,7 +74,7 @@ public class DatabaseConfig {
                     "('user-service', 'REST', 'http://localhost:8001', 5000, 100, 50, 1)," +
                     "('order-service', 'REST', 'http://localhost:8002', 8000, 150, 50, 1)," +
                     "('payment-service', 'SOAP', 'http://localhost:8003/soap', 10000, 50, 40, 1)," +
-                    "('glm-service', 'REST', 'https://open.bigmodel.cn/api/paas/v4', 30000, 100, 50, 1)"
+                    "('glm-service', 'REST', 'https://llmapi-pub.giihgai.com:4000', 30000, 100, 50, 1)"
                 );
             }
             
