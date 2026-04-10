@@ -71,21 +71,21 @@
               <el-input
                 v-model="testForm.headers"
                 type="textarea"
-                :rows="3"
-                placeholder='请输入JSON格式的请求头，例如: {"Authorization": "Bearer token"}'
+                :rows="4"
+                placeholder='请输入JSON格式的请求头，例如: {"Authorization": "Bearer token", "Content-Type": "application/json"}'
               />
             </el-form-item>
 
             <el-form-item 
               label="请求体" 
-              v-if="testForm.method === 'POST' || testForm.method === 'PUT'"
+              v-if="testForm.method === 'POST' || testForm.method === 'PUT' || testForm.method === 'DELETE'"
               prop="body"
             >
               <el-input
                 v-model="testForm.body"
                 type="textarea"
-                :rows="6"
-                placeholder='请输入JSON格式的请求体，例如: {"username": "admin", "password": "123456"}'
+                :rows="8"
+                placeholder='请输入JSON格式的请求体，例如: {"model": "GLM", "messages": [{"role": "user", "content": "Hello"}]}'
               />
             </el-form-item>
 
@@ -222,10 +222,20 @@ const handleReset = () => {
 }
 
 const handleExample = () => {
-  testForm.path = 'api/users'
-  testForm.params = JSON.stringify({ page: 1, size: 10 }, null, 2)
-  testForm.headers = JSON.stringify({ Authorization: 'Bearer demo-token' }, null, 2)
-  testForm.body = JSON.stringify({}, null, 2)
+  testForm.method = 'POST'
+  testForm.path = 'chat/completions'
+  testForm.headers = JSON.stringify({
+    "Authorization": "Bearer sk-Q-dZ9AL1LiTO4K52XFwcdw",
+    "Content-Type": "application/json"
+  }, null, 2)
+  testForm.body = JSON.stringify({
+    "model": "GLM",
+    "messages": [
+      {"role": "user", "content": "Hello, who are you!"}
+    ],
+    "stream": false
+  }, null, 2)
+  testForm.params = ''
   ElMessage.info('已加载示例数据')
 }
 

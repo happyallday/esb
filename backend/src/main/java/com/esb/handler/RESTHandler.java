@@ -25,9 +25,14 @@ public class RESTHandler {
         
         try {
             HttpHeaders headers = new HttpHeaders();
-            if (request.getHeaders() != null) {
+            
+            if (request.getHeaders() != null && !request.getHeaders().trim().isEmpty()) {
                 Map<String, String> headerMap = JSON.parseObject(request.getHeaders(), Map.class);
-                headerMap.forEach(headers::add);
+                headerMap.forEach((key, value) -> {
+                    if (key != null && value != null) {
+                        headers.set(key, value);
+                    }
+                });
             }
             
             String fullUrl = buildFullUrl(targetUrl, request.getPath(), request.getParams());
@@ -49,6 +54,7 @@ public class RESTHandler {
         } catch (Exception e) {
             response.setStatusCode(500);
             response.setError("代理请求失败: " + e.getMessage());
+            e.printStackTrace();
         }
         
         return response;
@@ -66,9 +72,10 @@ public class RESTHandler {
     }
 
     private HttpEntity<?> buildHttpEntity(ProxyRequest request, HttpHeaders headers) {
-        if (request.getBody() != null && !request.getBody().isEmpty() && 
+        String requestBody = request.getBody();
+        if (requestBody != null && !requestBody.trim().isEmpty() && !"{}".equals(requestBody.trim()) &&
                 !HttpMethod.GET.name().equals(request.getMethod())) {
-            return new HttpEntity<>(request.getBody(), headers);
+            return new HttpEntity<>(requestBody, headers);
         }
         return new HttpEntity<>(headers);
     }
