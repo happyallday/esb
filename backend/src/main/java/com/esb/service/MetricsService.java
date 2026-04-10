@@ -1,5 +1,6 @@
 package com.esb.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.esb.dto.MetricsResponse;
 import com.esb.entity.RequestLog;
 import com.esb.mapper.RequestLogMapper;
@@ -27,7 +28,7 @@ public class MetricsService {
         LocalDateTime todayEnd = LocalDate.now().plusDays(1).atStartOfDay();
         
         List<RequestLog> todayLogs = requestLogMapper.selectList(
-            com.baomidou.mybatisplus.core.conditions.query.QueryWrapper.<RequestLog>lambdaQuery()
+            new QueryWrapper<RequestLog>().lambda()
                 .ge(RequestLog::getRequestTime, todayStart)
                 .lt(RequestLog::getRequestTime, todayEnd)
         );
@@ -65,7 +66,7 @@ public class MetricsService {
             LocalDateTime dayEnd = date.plusDays(1).atStartOfDay();
             
             long count = requestLogMapper.selectCount(
-                com.baomidou.mybatisplus.core.conditions.query.QueryWrapper.<RequestLog>lambdaQuery()
+                new QueryWrapper<RequestLog>().lambda()
                     .ge(RequestLog::getRequestTime, dayStart)
                     .lt(RequestLog::getRequestTime, dayEnd)
             );
