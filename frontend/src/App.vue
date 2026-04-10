@@ -16,6 +16,9 @@
             <el-menu-item index="/">
               <span>仪表盘</span>
             </el-menu-item>
+            <el-menu-item index="/test">
+              <span>接口测试</span>
+            </el-menu-item>
             <el-menu-item index="/logs">
               <span>调用日志</span>
             </el-menu-item>
