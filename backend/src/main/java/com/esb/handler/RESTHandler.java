@@ -120,9 +120,20 @@ public class RESTHandler {
     private String buildFullUrl(String targetUrl, String path, String params) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(targetUrl + path);
         
-        if (params != null) {
-            Map<String, String> paramMap = JSON.parseObject(params, Map.class);
-            paramMap.forEach(builder::queryParam);
+        if (params != null && !params.trim().isEmpty()) {
+            try {
+                Map<String, String> paramMap = JSON.parseObject(params, Map.class);
+                if (paramMap != null) {
+                    paramMap.forEach((key, value) -> {
+                        if (key != null && value != null) {
+                            builder.queryParam(key, value);
+                        }
+                    });
+                }
+            } catch (Exception e) {
+                // 参数解析失败，忽略参数继续执行
+                System.err.println("参数解析失败: " + e.getMessage());
+            }
         }
         
         return builder.build().toUriString();
