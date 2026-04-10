@@ -119,6 +119,14 @@
           <el-tabs v-model="activeTab">
             <el-tab-pane label="响应体" name="body">
               <div class="response-content">
+                <div v-if="isErrorResponse" class="error-indicator">
+                  <el-alert 
+                    :title="getErrorTitle(response.body)" 
+                    :type="getErrorSeverity(response.statusCode)" 
+                    :closable="false" 
+                    show-icon
+                  />
+                </div>
                 <json-viewer :value="parseJson(response.body)" :expand-depth="3" copyable />
               </div>
             </el-tab-pane>
@@ -129,8 +137,10 @@
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="错误信息" name="error" v-if="response.error">
-              <el-alert :title="response.error" type="error" :closable="false" />
+            <el-tab-pane label="原始响应" name="raw">
+              <div class="response-content">
+                <pre class="raw-response">{{ response.body }}</pre>
+              </div>
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -140,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, FormInstance, FormRules } from 'element-plus'
 import { testInterface, getServices } from '@/api/test'
 import JsonViewer from 'vue-json-viewer'
@@ -199,8 +209,24 @@ const handleTest = async () => {
       response.value = result
       lastResponseTime.value = duration
       
+      // 解析响应体中的错误信息
+      if (result.body) {
+        try {
+          const responseBody = JSON.parse(result.body)
+          if (responseBody.error) {
+            activeTab.value = 'body' // 显示错误详细信息
+          }
+        } catch {
+          // 如果body不是JSON，保持原样显示
+        }
+      }
+      
       if (result.statusCode >= 200 && result.statusCode < 300) {
         ElMessage.success(`请求成功，耗时 ${duration}ms`)
+      } else if (result.statusCode >= 400 && result.statusCode < 500) {
+        ElMessage.warning(`客户端错误 (HTTP ${result.statusCode})`)
+      } else if (result.statusCode >= 500) {
+        ElMessage.error(`服务器错误 (HTTP ${result.statusCode})`)
       } else {
         ElMessage.warning(`请求完成，状态码: ${result.statusCode}`)
       }
@@ -251,6 +277,36 @@ const parseJson = (jsonString: string) => {
   }
 }
 
+const isErrorResponse = computed(() => {
+  if (!response.value?.body) return false
+  try {
+    const body = JSON.parse(response.value.body)
+    return !!body.error || response.value.statusCode >= 400
+  } catch {
+    return response.value.statusCode >= 400
+  }
+})
+
+const getErrorTitle = (body: string) => {
+  try {
+    const responseObject = JSON.parse(body)
+    if (responseObject.error) {
+      return typeof responseObject.error === 'string' 
+        ? responseObject.error 
+        : responseObject.error.message || '发生错误'
+    }
+    return '请求处理出错'
+  } catch {
+    return '请求处理出错'
+  }
+}
+
+const getErrorSeverity = (statusCode: number) => {
+  if (statusCode >= 500) return 'error'
+  if (statusCode >= 400) return 'warning'
+  return 'info'
+}
+
 onMounted(() => {
   loadServices()
 })
@@ -279,5 +335,18 @@ onMounted(() => {
   background-color: #f5f7fa;
   padding: 15px;
   border-radius: 4px;
+}
+
+.error-indicator {
+  margin-bottom: 15px;
+}
+
+.raw-response {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
 }
 </style>
